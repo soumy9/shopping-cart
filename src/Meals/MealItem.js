@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-const MealItem = (props) => {
+const MealItem = React.memo((props) => {
   console.log('MealItem re-rendered');
   const { name, price, description } = props.mealData;
   // const handleAddToCart = useCallback(() => {
@@ -25,6 +25,6 @@ const MealItem = (props) => {
       <button onClick={handleAddToCart}>Add to cart</button>
     </li>
   );
-};
+});
 
 export default MealItem;
