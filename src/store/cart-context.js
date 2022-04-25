@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 
 const CartContext = React.createContext({
   items: [],
-  totalAmmount: 0,
+  totalAmount: 0,
   totalUnits: 0,
   addUnits: (id) => {},
   removeUnits: (id) => {},
@@ -11,21 +11,20 @@ const CartContext = React.createContext({
 export const CartProvider = (props) => {
   const defaultCartState = {
     items: [],
-    totalAmmount: 0,
+    totalAmount: 0,
     totalUnits: 0,
   };
   const cartReducer = (state, action) => {
     let newTotalAmount, newTotalUnits, newItems;
-    // const targetItem = state.items.find((item) => item.id === action.id);
+    let targetIndex = -1;
+    const targetItem = state.items.find((item, index) => {
+      targetIndex = index;
+      return item.id === action.id;
+    });
     switch (action.type) {
       case 'ADD':
-        newTotalAmount = state.totalAmmount + action.price;
+        newTotalAmount = state.totalAmount + action.price;
         newTotalUnits = state.totalUnits + 1;
-        let targetIndex = -1;
-        const targetItem = state.items.find((item, index) => {
-          targetIndex = index;
-          return item.id === action.id;
-        });
         if (targetItem) {
           newItems = [...state.items];
           newItems[targetIndex].quantity += 1;
@@ -39,12 +38,22 @@ export const CartProvider = (props) => {
           newItems = [...state.items, newItem];
         }
         break;
+      case 'DECREASE':
+        if (targetItem.quantity === 1) {
+          newItems = state.items.filter((item) => item.id !== action.id);
+        } else {
+          newItems = [...state.items];
+          newItems[targetIndex].quantity -= 1;
+        }
+        newTotalAmount = state.totalAmount - state.items[targetIndex].price;
+        newTotalUnits = state.totalUnits - 1;
+        break;
       default:
         newItems = [...state.items];
     }
 
     return {
-      totalAmmount: newTotalAmount,
+      totalAmount: Number(newTotalAmount.toFixed(2)),
       totalUnits: newTotalUnits,
       items: newItems,
     };
@@ -57,11 +66,11 @@ export const CartProvider = (props) => {
     dispatchCartAction({ type: 'ADD', id: id, price: price, name: name });
   };
   const removeUnitsFromCartHandler = (id) => {
-    dispatchCartAction({ type: 'REMOVE' });
+    dispatchCartAction({ type: 'DECREASE', id: id });
   };
   const cartContext = {
     items: cartState.items,
-    totalAmmount: cartState.totalAmmount,
+    totalAmount: cartState.totalAmount,
     totalUnits: cartState.totalUnits,
     addUnits: addUnitsToCartHandler,
     removeUnits: removeUnitsFromCartHandler,

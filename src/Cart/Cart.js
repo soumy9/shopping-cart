@@ -9,10 +9,10 @@ const Cart = (props) => {
     <div className='cart'>
       <ul className='cart__items'>
         {cartCtx.items.map((item) => (
-          <CartItem {...item} key={item.id}/>
+          <CartItem {...item} key={item.id} onClickIncreaseUnits={cartCtx.addUnits} onClickDecreaseUnits={cartCtx.removeUnits}/>
         ))}
       </ul>
-      <p className='cart__total'>{cartCtx.totalAmmount}</p>
+      <p className='cart__total'>${cartCtx.totalAmount.toFixed(2)}</p>
       <div className='cart__action-buttons'>
         <button className='cart__action-buttons--order'>Order</button>
         <button className='cart__action-buttons--cancel'>Cancel</button>
